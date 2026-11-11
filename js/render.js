@@ -53,10 +53,11 @@
       ctx.beginPath(); ctx.arc(b.x, b.y, r, 0, Math.PI * 2); ctx.fill();
     }
     if (b.kind === "ball") {
+      // Big number on a white disc, so it reads at a glance.
       ctx.fillStyle = "#fbf8f0";
-      ctx.beginPath(); ctx.arc(b.x, b.y, r * 0.5, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(b.x, b.y, r * 0.76, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "#111";
-      ctx.font = "bold " + Math.round(r * 0.8) + "px system-ui, sans-serif";
+      ctx.font = "900 " + Math.round(r * 1.15) + "px system-ui, sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(String(b.n), b.x, b.y + 0.5);
