@@ -111,10 +111,11 @@
   // ---------- Input ----------
   function toBoard(e) {
     var r = canvas.getBoundingClientRect();
-    return {
-      x: (e.clientX - r.left) / r.width * TW - M,
-      y: (e.clientY - r.top) / r.height * TH - M
-    };
+    var fx = (e.clientX - r.left) / r.width;
+    var fy = (e.clientY - r.top) / r.height;
+    // Inverse of the canvas transform in sizeCanvas.
+    if (portrait) return { x: W + M - fy * TW, y: fx * TH - M };
+    return { x: fx * TW - M, y: fy * TH - M };
   }
 
   // The first object ball the cue ball hits along the ray. Returns { hitX, hitY, x, y, group, ok } or null.
@@ -388,18 +389,42 @@
       aim: aim.show ? aim : null,
       pulling: aim.pulling,
       guide: guide,
-      zone: placing
+      zone: placing,
+      upright: portrait
     });
   }
 
+  // Phone held upright: the table stands up (its long side runs down the screen), so it fills the screen.
+  var portrait = false;
+  function isPortrait() {
+    return window.innerWidth < 700 && window.innerHeight > window.innerWidth;
+  }
+
   function sizeCanvas() {
+    portrait = isPortrait();
     var parent = canvas.parentElement;
-    var w = Math.max(240, Math.min(720, parent.clientWidth || 720));
-    var h = Math.round(w * TH / TW);
     var dpr = Math.min(2, window.devicePixelRatio || 1);
-    canvas.width = Math.round(w * dpr);
-    canvas.height = Math.round(h * dpr);
-    ctx.setTransform(canvas.width / TW, 0, 0, canvas.height / TH, M * canvas.width / TW, M * canvas.height / TH);
+    if (portrait) {
+      // As wide as the screen allows, and no taller than about 62% of the screen height.
+      var maxH = window.innerHeight * 0.62;
+      var pw = Math.max(200, Math.min(parent.clientWidth || 360, maxH * TH / TW));
+      var ph = Math.round(pw * TW / TH);
+      canvas.style.width = Math.round(pw) + "px";
+      canvas.style.height = ph + "px";
+      canvas.width = Math.round(pw * dpr);
+      canvas.height = Math.round(ph * dpr);
+      // Table x runs down the screen (the cue end is at the bottom); table y runs left to right.
+      var sp = canvas.width / TH;
+      ctx.setTransform(0, -sp, sp, 0, sp * M, sp * (W + M));
+    } else {
+      canvas.style.width = "";
+      canvas.style.height = "";
+      var w = Math.max(240, Math.min(720, parent.clientWidth || 720));
+      var h = Math.round(w * TH / TW);
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      ctx.setTransform(canvas.width / TW, 0, 0, canvas.height / TH, M * canvas.width / TW, M * canvas.height / TH);
+    }
   }
 
   // ---------- Menu and buttons ----------

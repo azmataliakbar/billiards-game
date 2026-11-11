@@ -32,7 +32,7 @@
     return isFinite(t) ? Math.max(0, t) : 0;
   }
 
-  function drawBall(ctx, b) {
+  function drawBall(ctx, b, upright) {
     var r = b.r;
     ctx.save();
     if (b.kind === "cue") {
@@ -70,7 +70,14 @@
       ctx.font = "900 " + Math.round(r * 1.0) + "px system-ui, sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(String(b.n), b.x, b.y + 0.5);
+      if (upright) {
+        // The table stands upright on a phone: turn the number so it reads left to right.
+        ctx.translate(b.x, b.y);
+        ctx.rotate(Math.PI / 2);
+        ctx.fillText(String(b.n), 0, 0.5);
+      } else {
+        ctx.fillText(String(b.n), b.x, b.y + 0.5);
+      }
     }
     ctx.restore();
   }
@@ -82,10 +89,10 @@
     ctx.save();
     ctx.clearRect(-M, -M, W + 2 * M, H + 2 * M);
 
-    // Wooden frame.
+    // Green-dyed rail frame.
     var wood = ctx.createLinearGradient(-M, -M, W + M, H + M);
-    wood.addColorStop(0, "#8a5a2b");
-    wood.addColorStop(1, "#4a2a12");
+    wood.addColorStop(0, "#0f4a2d");
+    wood.addColorStop(1, "#052416");
     ctx.fillStyle = wood;
     ctx.fillRect(-M, -M, W + 2 * M, H + 2 * M);
 
@@ -122,7 +129,7 @@
     });
 
     // Balls.
-    view.balls.forEach(function (b) { drawBall(ctx, b); });
+    view.balls.forEach(function (b) { drawBall(ctx, b, view.upright); });
 
     // Cue stick, pulled back from the cue ball while aiming.
     var cue = view.cueBall;
