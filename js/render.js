@@ -39,25 +39,35 @@
       ctx.fillStyle = "#fbf8f0";
       ctx.beginPath(); ctx.arc(b.x, b.y, r, 0, Math.PI * 2); ctx.fill();
       ctx.strokeStyle = "rgba(0,0,0,0.25)"; ctx.lineWidth = 1; ctx.stroke();
-    } else if (b.n > 8) {
-      // Stripe: white ball with a coloured band across the middle.
-      ctx.fillStyle = "#fbf8f0";
-      ctx.beginPath(); ctx.arc(b.x, b.y, r, 0, Math.PI * 2); ctx.fill();
-      ctx.save();
-      ctx.beginPath(); ctx.arc(b.x, b.y, r, 0, Math.PI * 2); ctx.clip();
-      ctx.fillStyle = ballFill(b.n);
-      ctx.fillRect(b.x - r, b.y - r * 0.5, 2 * r, r);
-      ctx.restore();
     } else {
-      ctx.fillStyle = ballFill(b.n);
-      ctx.beginPath(); ctx.arc(b.x, b.y, r, 0, Math.PI * 2); ctx.fill();
+      var ringW = r * 0.3;          // fat outer ring
+      var col = ballFill(b.n);
+      if (b.n > 8) {
+        // Stripe: white centre inside a fat coloured ring.
+        ctx.fillStyle = "#fbf8f0";
+        ctx.beginPath(); ctx.arc(b.x, b.y, r, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = col;
+        ctx.lineWidth = ringW * 2;
+        ctx.beginPath(); ctx.arc(b.x, b.y, r - ringW / 2, 0, Math.PI * 2); ctx.stroke();
+      } else {
+        // Solid (and the 8 ball): full colour with a fat ring. The 8 ball gets a white ring so it shows on dark felt.
+        ctx.fillStyle = col;
+        ctx.beginPath(); ctx.arc(b.x, b.y, r, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = b.n === 8 ? "#f4f1ea" : "rgba(0, 0, 0, 0.45)";
+        ctx.lineWidth = ringW * 2;
+        ctx.beginPath(); ctx.arc(b.x, b.y, r - ringW / 2, 0, Math.PI * 2); ctx.stroke();
+      }
+      // Thin dark edge so the outline is crisp.
+      ctx.strokeStyle = "rgba(0, 0, 0, 0.6)";
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(b.x, b.y, r, 0, Math.PI * 2); ctx.stroke();
     }
     if (b.kind === "ball") {
       // Big number on a white disc, so it reads at a glance.
       ctx.fillStyle = "#fbf8f0";
-      ctx.beginPath(); ctx.arc(b.x, b.y, r * 0.76, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(b.x, b.y, r * 0.66, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "#111";
-      ctx.font = "900 " + Math.round(r * 1.15) + "px system-ui, sans-serif";
+      ctx.font = "900 " + Math.round(r * 1.0) + "px system-ui, sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(String(b.n), b.x, b.y + 0.5);
