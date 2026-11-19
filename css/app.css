@@ -268,16 +268,11 @@ h1, h2, h3 { margin: 0; line-height: 1.2; }
   user-select: none;
 }
 
-/* Small phones: Netlify's "Powered by" badge sits over the bottom of the screen and covered
-   the credit. On phones the credit moves to the top strip, where the badge never reaches. */
+/* Small phones: Netlify's "Powered by" badge sits at the bottom right and covered the credit.
+   On phones the credit moves to the bottom left, and only the name is shown. */
 @media (max-width: 480px) {
-  body { padding-top: 40px; }
-  .footer {
-    top: 0;
-    bottom: auto;
-    height: 40px;
-    background: linear-gradient(to bottom, rgba(26, 14, 6, 0.9), rgba(26, 14, 6, 0));
-  }
+  .footer { justify-content: flex-start; padding-left: 16px; }
+  .idea-by { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
